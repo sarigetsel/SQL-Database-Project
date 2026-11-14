@@ -1,10 +1,5 @@
+-- Procedure 1: Retrieves total bookings per show and returns total attendees for 2025 via output parameter
 
---השתמשתי בכל הנושאים חוץ מunion 
-
---פרוצדורה 1
---פרוצדורה ששולפת את כמות המוזמנים בכל מופע ומציגה את שם המופע
---ומחזירה בoutput את כל המוזמנים שהיו ב2025
---השתמשתי פה בoutput,join,groupby,cte
 alter procedure AmountShows(@sumShowInThisYear int output)
 as
 begin
@@ -40,14 +35,12 @@ end
 
 declare @total int;
 exec AmountShows @sumShowInThisYear=@total output
-PRINT 'סה"כ מופעים בשנת 2025: ' + CAST(@total AS NVARCHAR);
+PRINT 'Total shows in 2025: ' + CAST(@total AS NVARCHAR);
 
 go
 
 
---פרוצדורה 2
---פורצדורה ששולפת לכל מוזמן את האירועים שלו
---השתמשתי בפונקציית מערכת וselgjoin
+-- Procedure 2: Retrieves all events booked by each customer
 alter procedure InvitedShow
 as
 begin
@@ -71,9 +64,7 @@ exec InvitedShow
 
 go
 
---פונקציה 1
---פונקציה שמחזירה בכל עיר ממספרת את מספר האומנים לפי התאריך של המופע
---השתמשתי בrow-number
+-- Function 1: Returns numbered artists per city ordered by show date
 alter function GetCityMostArtists()
 returns @outPutTable table
 (city nvarchar(30),idArtist int ,firstName nvarchar(30),
@@ -82,7 +73,7 @@ as
 begin
 insert into @outPutTable
   select a.city,a.idArtist,a.firstName,a.lastName,
-  MIN(s.dateShow) AS dateShow, -- התאריך המוקדם ביותר לאמן בעיר הזאת
+  MIN(s.dateShow) AS dateShow, -- Earliest show date for the artist in this city
   ROW_NUMBER () over(partition by a.city order by MIN(s.dateShow))as cityRow
   from artist a
   inner join shows s
@@ -94,9 +85,7 @@ end
 select * from dbo.GetCityMostArtists();
 go
 
---פונקציה 2
---שולפת אומן שהוא גם קהל
---השתמשתי בחיתוך
+-- Function 2: Retrieves an artist who is also a customer
 alter FUNCTION GetFirstArtistCustomer()
 RETURNS NVARCHAR(200)
 AS
@@ -121,7 +110,7 @@ END;
 
 DECLARE @res NVARCHAR(200);
 SET @res = dbo.GetFirstArtistCustomer();
-PRINT 'האמנית שגם לקוחה היא: ' + ISNULL(@res, 'אין תוצאה');
+PRINT 'The artist who is also a customer is: ' + ISNULL(@res, 'No result found');
 
 
 
@@ -131,18 +120,15 @@ PRINT 'האמנית שגם לקוחה היא: ' + ISNULL(@res, 'אין תוצאה');
 
 go
 
---פורצדורה 3
---התוכנית מציגה טבלת Pivot דינמית שמראה לכל עיר את רשימת האמנים שלה לפי סדר התאריכים
---לפי הטבלה שקראתי לה מהפונקציה הראשונה שבה השתמשתי בrowNumber
---השתמשתי פה ב-Pivot Table וDynamic SQL  systamefunction וsubquery
+-- Procedure 3: Dynamic PIVOT table displaying artists per city ordered chronologically
 create procedure pivotProc
 as
 begin
 DECLARE @cols NVARCHAR(MAX);       
 DECLARE @query NVARCHAR(MAX);
 
---מכניס את כל הערים ברשימה לcols
-SELECT @cols = STRING_AGG(QUOTENAME(city), ',')   -- מחברים את שמות הערים עם פסיקים ומוסיפים סוגריים מרובעים לכל שם
+-- Inserts all unique cities into @cols with square brackets
+SELECT @cols = STRING_AGG(QUOTENAME(city), ',')   
 from
 (
   select distinct city
@@ -163,7 +149,7 @@ PIVOT (
 ) AS pvt
 order BY cityRow;'; 
 
--- 3. מריצים את השאילתה שנבנתה
+-- Executes the constructed query
 EXEC sp_executesql @query; 
 end
 
@@ -171,5 +157,3 @@ end
 exec pivotProc
 
 go
-
-
