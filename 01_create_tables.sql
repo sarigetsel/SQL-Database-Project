@@ -1,8 +1,7 @@
-
 create database Auditorium_sari
 go
 use Auditorium_sari;
---ΰεξο 
+--ΧΧ•ΧΧ
 create table artist
 (
    idArtist int primary key,
@@ -13,7 +12,7 @@ create table artist
 )
 CREATE INDEX idx_artist_city ON artist(city);
 
---ξετςιν-ΰιψεςιν
+--ΧΧ•Χ¤Χ™ΧΆΧ™Χ-ΧΧ™Χ¨Χ•ΧΆΧ™Χ
 create table shows
 (
    IdShow int identity(100,1) primary key,
@@ -26,7 +25,7 @@ create table shows
 )
 CREATE INDEX idx_shows_IdArtist ON shows(IdArtist);
 CREATE INDEX idx_shows_dateShow ON shows(dateShow);
---λψθιριν
+--Χ›Χ¨ΧΧ™Χ΅Χ™Χ
 create table cards
 (
    idCards int primary key,
@@ -38,7 +37,7 @@ create table cards
 )
 create index idx_cards_IdShow on cards(IdShow)
 
---μχεηεϊ
+--ΧΧ§Χ•Χ—Χ•Χª
 create table customers
 (
    IdCustomer int primary key,
@@ -48,13 +47,13 @@ create table customers
    city nvarchar(30)
 )
 create index idx_customers_city on customers(city)
---δζξπεϊ
+--Χ”Χ–ΧΧ Χ•Χª
 create table orders
 (
   IdOrder int identity(1,1) primary key,
-  IdCustomer int,-- ϊ.ζ. ωμ μχεη
+  IdCustomer int,-- Χª.Χ–. Χ©Χ ΧΧ§Χ•Χ—
   IdShow int,
-  codeCardWelcome int,--χεγ λψθιρ ξεζξο
+  codeCardWelcome int,--Χ§Χ•Χ“ Χ›Χ¨ΧΧ™Χ΅ ΧΧ•Χ–ΧΧ
   orderDate date,
   foreign key(IdCustomer) references customers(IdCustomer),
   foreign key(IdShow) references shows(IdShow),
@@ -63,11 +62,3 @@ create table orders
 CREATE INDEX idx_orders_IdCustomer ON orders(IdCustomer);
 CREATE INDEX idx_orders_IdShow ON orders(IdShow);
 CREATE INDEX idx_orders_codeCardWelcome ON orders(codeCardWelcome);
-
-
-
-
-
-
-
-
