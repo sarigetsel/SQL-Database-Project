@@ -1,7 +1,7 @@
 create database Auditorium_sari
 go
 use Auditorium_sari;
---אומן
+-- Artist
 create table artist
 (
    idArtist int primary key,
@@ -12,7 +12,7 @@ create table artist
 )
 CREATE INDEX idx_artist_city ON artist(city);
 
---מופיעים-אירועים
+-- Shows / Events
 create table shows
 (
    IdShow int identity(100,1) primary key,
@@ -25,7 +25,7 @@ create table shows
 )
 CREATE INDEX idx_shows_IdArtist ON shows(IdArtist);
 CREATE INDEX idx_shows_dateShow ON shows(dateShow);
---כרטיסים
+-- Cards / Tickets
 create table cards
 (
    idCards int primary key,
@@ -37,7 +37,7 @@ create table cards
 )
 create index idx_cards_IdShow on cards(IdShow)
 
---לקוחות
+-- Customers
 create table customers
 (
    IdCustomer int primary key,
@@ -47,13 +47,13 @@ create table customers
    city nvarchar(30)
 )
 create index idx_customers_city on customers(city)
---הזמנות
+-- Orders
 create table orders
 (
   IdOrder int identity(1,1) primary key,
-  IdCustomer int,-- ת.ז. של לקוח
+  IdCustomer int,-- Customer ID / Teudat Zehut
   IdShow int,
-  codeCardWelcome int,--קוד כרטיס מוזמן
+  codeCardWelcome int,-- Ordered card code
   orderDate date,
   foreign key(IdCustomer) references customers(IdCustomer),
   foreign key(IdShow) references shows(IdShow),
